@@ -1,0 +1,246 @@
+<!--
+	此配置文件主要包含几方面
+	1:url映射
+	2:action处理
+	3:page package配置,多个package以逗号分割
+	rule
+	1:java声明以哪种page处理
+	2:flow声明以哪种类型流转 redirect/forward/freemarker/velocity...
+-->
+<sweb encode="gbk">
+	<welcome-file>index/</welcome-file>
+	<welcome-file-skip>forward</welcome-file-skip>
+	<!-- url解析，假url->实际请求地址 eg:*.html *.ftl -->
+	<parses>
+		<parse name="freemarker"
+			class="org.sevenstar.web.url.FreemarkerParse" />
+		<parse name="address"
+			class="com.zjhcsoft.system.parse.AddressParse"  />
+		<parse name="addressparse"
+			class="com.ct10000.url.UrlParse" />
+		<parse name="jfpaddress"
+			class="com.zjhcsoft.system.parse.JfpAddressParse" />
+		<parse name="nosuffixaddress"
+			class="com.zjhcsoft.system.parse.NoSuffixAddress" />
+	</parses>
+	<!-- action 实例查找机制 ManagerAction!execute.do-->
+	<finds>
+		<find name="page" class="org.sevenstar.web.find.PageFind">
+			<param name="package"
+				value="org.sevenstar.app.page,test.page,com.zjhcsoft.zjpr.page,com.zjhcsoft.wt.page,com.ct10000.url.page" />
+		</find>
+		<find name="action" class="org.sevenstar.web.find.ActionFind">
+			<param name="package"
+				value="org,com" />
+		</find>
+		<find name="annotation"
+			class="org.sevenstar.web.find.AnnotationFind">
+			<param name="package"
+				value="org.sevenstar.app,test.manager,com.zjhcsoft.zjpr,com.zjhcsoft.wt" />
+		</find>
+		<find name="undo" class="org.sevenstar.web.find.UnDoActionFind" />
+	</finds>
+	<!-- 执行方式 -->
+	<invocations>
+		<invocation name="java"
+			class="org.sevenstar.web.action.java.DefaultJavaInvocation" />
+	</invocations>
+	<!-- interceptor配置 -->
+	<interceptors>
+		<interceptor name="monitor"
+			class="org.sevenstar.web.interceptor.MonitorInterceptor">
+			<param name="sqlExecuteTime" value="20000" />
+			<param name="actionExecuteTime" value="30000" />
+			<param name="sqlMapIds" value="30" />
+			<param name="resultSetSize" value="200" />
+		</interceptor>
+		<interceptor name="cache"
+			class="org.sevenstar.web.interceptor.CacheInterceptor">
+			<param name="*menu.htm*" value="10s" />
+		</interceptor>
+		<interceptor name="parameter"
+			class="org.sevenstar.web.interceptor.ParameterInterceptor" >
+			<param name="*bizdiscontro/disdescinput.jsp" value="false"/>
+			<param name="*bizdiscontro/modifydisinut.jsp" value="false"/>
+			<param name="*bizsubject/bizflashdescription.jsp" value="false"/>
+			<param name="*bizsubject/bizflashdescriptiontwo.jsp" value="false"/>
+			<param name="*bizsubject/bizpricesimplepoint.jsp" value="false"/>
+			<param name="*bizsubject/bizsellingpoint.jsp" value="false"/>
+			<param name="*bizsubject/dispricesimplepoint.jsp" value="false"/>
+			<param name="*bizsubject/dissellingpoint.jsp" value="false"/>
+			<param name="*foradvance/bizinput.jsp" value="false"/>
+			<param name="*foradvance/bizmodifyinput.jsp" value="false"/>
+			<param name="*foradvance/modifyinput.jsp" value="false"/>
+			<param name="*terminalcontro/updateterminaldesc.jsp" value="false"/>
+			<param name="*terminalcontro/updateterminalflash.jsp" value="false"/>
+			<param name="*terminalcontro/updateterminalpoint.jsp" value="false"/>
+			<param name="*terminalcontro/updateterminaltest.jsp" value="false"/>
+			<param name="*zjpr/news/*" value="false"/>
+			<param name="*zjpr/bizsubject/*" value="false"/>
+		</interceptor>
+		<interceptor name="transaction"
+			class="org.sevenstar.persistent.db.transaction.TransactionInterceptor" />
+		<interceptor name="exception"
+			class="org.sevenstar.web.interceptor.ExceptionInterceptor" />
+		<interceptor name="upload"
+			class="org.sevenstar.web.interceptor.UploadInterceptor">
+			<param name="maxsize" value="5000000" />
+			<param name="allow" value="txt,rar,zip,jpg,bmp,jpeg,gif,ico,htm,html,jsp,png,xls,doc,pdf" />
+			<param name="deny" value="exe,sh,bat" />
+			<param name="path_logic" value="appfile" />
+			<param name="path_absolute" value="" />
+		</interceptor>
+		<interceptor name="security"
+			class="org.sevenstar.app.interceptor.SecurityInterceptor">
+			<param name="excludeUrls"
+				value="*error.ftl*,*error.htm*,*login.htm*,*signin.htm*,*registerinput.htm*,*s_user!login.action*,*/images/*,*/js/*,*/css/*" />
+		</interceptor>
+	</interceptors>
+	<!-- 返回路径寻找 -->
+	<result-locations>
+		<location name="default"
+			class="org.sevenstar.web.location.DefaultResultLocation" />
+	</result-locations>
+	<!-- 视图类型  -->
+	<result-types>
+		<result-type name="freemarker"
+			class="org.sevenstar.web.view.freemarker.FreemarkerResult">
+		  <!-- <param name="TemplateCache" value="0" /> -->  
+		  <param name="errorLocation" value="error.ftl" />
+			<param name="DateHelper"
+				value="org.sevenstar.util.DateHelper" />
+			<param name="ApplicationContext"
+				value="org.sevenstar.app.context.ApplicationContext" />
+			<param name="BeforeCurrentMonth"
+			    value="org.sevenstar.app.date.BeforeCurrentMonth" />
+			<param name="Title"
+			    value="com.zjhcsoft.system.title.Title" />
+			<param name="Meta"
+			    value="com.zjhcsoft.system.title.Meta" />
+			<param name="Plink"
+			    value="com.zjhcsoft.system.plink.Plink" />
+			<param name="branch"
+			    value="com.zjhcsoft.system.pageaddress.branch" />
+			<param name="adv"
+			    value="com.zjhcsoft.zjpr.adv.service.Ad_mainService" />
+			<param name="Sale"
+                value="com.zjhcsoft.system.sale.Sale" />
+		</result-type>
+		<result-type name="forward"
+			class="org.sevenstar.web.view.jsp.JspForwardResult" />
+		<result-type name="redirect"
+			class="org.sevenstar.web.view.jsp.JspRedirectResult" />
+	</result-types>
+	<!-- 全局路径 -->
+	<global-results>
+		<result name="error" type="freemarker" location="/error.ftl" />
+		<result name="redirect" type="freemarker"
+			location="/redirect.ftl" />
+	</global-results>
+	<!-- action配置 -->
+	<action>
+		<url>	
+		    <rule pattern="*.css*" find="undo" type="java"
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,parameter">
+				<exclude pattern="*Test3*" />
+			</rule>
+		<!-- 	
+			<rule pattern="*.jsp*" find="page" type="java"
+				resultType="forward" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+				<exclude pattern="*tree*" />
+				<exclude pattern="*monitor/jsp*" />
+			</rule>-->
+			
+			<rule pattern="*.js" find="undo" type="java"
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,parameter">
+				<exclude pattern="*Test3*" />
+			</rule>
+			<rule pattern="*/" find="page" type="java"
+				resultType="freemarker" resultLocation="default" parse="addressparse"
+				inteceptors="exception,monitor,upload,parameter">
+				<exclude pattern="*Test3*"/>	
+			</rule>
+		    <rule pattern="*/yewu/*.shtml*" find="page" type="java"
+				resultType="freemarker" resultLocation="default" parse="addressparse"
+				inteceptors="exception,parameter,cache">
+			</rule>
+		    
+			<rule pattern="*news/newsedit.htm*" find="page" type="java"
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+			</rule>
+			
+			<rule pattern="*news/newsinsert.htm*" find="page" type="java"
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+			</rule>
+			
+			<rule pattern="*tbcardmanage/doupload.htm" find="page" type="java" 
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+			</rule>
+
+			<rule pattern="*bizsubject/uploadcomplete.htm" find="page" type="java" 
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+			</rule>
+
+			<rule pattern="*bizsubject/typelogoupload.htm" find="page" type="java" 
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+			</rule>			
+
+			<rule pattern="*terminalcontro/uploadterminalpic.htm" find="page" type="java" 
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+			</rule>
+
+			<rule pattern="*.htm*" find="page" type="java"
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+			</rule>
+			<rule pattern="*.ftl*" find="page" type="java"
+				resultType="freemarker" resultLocation="default" parse="freemarker"
+				inteceptors="exception,upload,parameter">
+				<exclude pattern="*Test3*" />
+			</rule>			
+			<rule pattern="*.do*" find="action" type="java"
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+				<exclude pattern="*Test3*" />
+			</rule>
+			<rule pattern="*.action*" find="annotation" type="java"
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,upload,parameter">
+				<exclude pattern="*Test3*" />
+			</rule>
+
+			<rule pattern="ben" find="page" type="java"
+				resultType="freemarker" resultLocation="default" parse="addressparse"
+				inteceptors="exception,upload,parameter">
+				<exclude pattern="*CrossDomainSSO*" />
+			</rule> 
+			<rule pattern="*.shtml*" find="page" type="java"
+				resultType="freemarker" resultLocation="default" parse="addressparse"
+				inteceptors="exception,upload,parameter">
+				<exclude pattern="*Test3*" />
+			</rule>
+			<rule pattern="*.jfp*" find="page" type="java"
+				resultType="freemarker" resultLocation="default" parse="jfpaddress"
+				inteceptors="exception,upload,parameter">
+				<exclude pattern="*Test3*" />
+			</rule>
+			
+			<!--
+			<rule pattern="*.action*" find="annotation" type="java"
+				resultType="freemarker" resultLocation="default" parse=""
+				inteceptors="exception,monitor,upload,parameter">
+				<exclude pattern="*Test3*" />
+			</rule>
+			 -->
+		</url>
+	</action>
+</sweb>
